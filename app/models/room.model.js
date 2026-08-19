@@ -1,5 +1,5 @@
 import { DataTypes, Model } from 'sequelize';
-import sequelize from './sequelize.client';
+import sequelize from './sequelize.client.js';
 
 class Room extends Model {}
 
