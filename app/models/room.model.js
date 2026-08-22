@@ -23,6 +23,9 @@ Room.init(
     description: {
       type: DataTypes.TEXT,
     },
+    image: {
+      type: DataTypes.STRING,
+    },
     approval_required: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
