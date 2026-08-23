@@ -2,7 +2,7 @@ import sequelize from '../models/sequelize.client.js';
 import '../models/index.js';
 
 try{
-    await sequelize.sync();
+    await sequelize.sync({force:true});
 
     const tables = await sequelize.getQueryInterface().showAllTables();
     console.log('Tables created successfully:', tables);

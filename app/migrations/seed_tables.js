@@ -5,13 +5,19 @@ import * as argon2 from 'argon2';
 
 try {
     await sequelize.sync();
+
+    const seedPassword = process.env.SEED_PASSWORD;
+
+    if (!seedPassword) {
+        throw new Error('SEED_PASSWORD is missing in .env');
+    }
+
+    const passwordHash = await argon2.hash(seedPassword);
     
     // Seed Users
     const users = [
-        { first_name: 'Michael', last_name: 'Jackson', email: 'michael@crenevo.test', password: await argon2.hash(process.env.MANAGER_PASSWORD), role: 'manager' },
-        { first_name: 'Sarah', last_name: 'Smith', email: 'sarah@crenevo.test', password: await argon2.hash('password'), role: 'user' },
-        { first_name: 'Bob', last_name: 'Marley', email: 'bob@crenevo.test', password: await argon2.hash('password'), role: 'user' },
-        { first_name: 'Jack', last_name: 'Sparrow', email: 'jack@crenevo.test', password: await argon2.hash('password'), role: 'user' },
+        { first_name: 'Michael', last_name: 'Jackson', email: 'michael@crenevo.test', password: passwordHash, role: 'manager' },
+        { first_name: 'Sarah', last_name: 'Smith', email: 'sarah@crenevo.test', password: passwordHash, role: 'user' },
     ];
     await User.bulkCreate(users);
 
