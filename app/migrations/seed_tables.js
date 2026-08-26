@@ -23,10 +23,10 @@ try {
 
     // Seed Rooms
     const rooms = [
-        { name: 'Kiev', building: 'A', floor:'1', capacity: 10, description: "salle lumineuse adaptée aux réunions d’équipe.", approval_required: false },
+        { name: 'Kiev', building: 'A', floor:'1', capacity: 10, description: 'salle calme pour les réunions en petit comité.', approval_required: false },
         { name: 'Stockholm', building: 'B', floor:'2', capacity: 20, description: 'petite salle équipée pour les visioconférences.', approval_required: true },
         { name: 'Paris', building: 'B', floor:'1', capacity: 15, description: 'grand espace adapté aux présentations et ateliers.', approval_required: false },
-        { name: 'London', building: 'A', floor:'3', capacity: 25, description: 'salle calme pour les réunions en petit comité.', approval_required: false },
+        { name: 'London', building: 'A', floor:'3', capacity: 25, description: "salle lumineuse adaptée aux réunions d’équipe.", approval_required: false },
         { name: 'Madrid', building: 'C', floor:'1', capacity: 30, description: 'grande salle destinée aux conférences.', approval_required: true },
     ];
     await Room.bulkCreate(rooms);
