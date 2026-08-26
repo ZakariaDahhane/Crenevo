@@ -1,0 +1,21 @@
+<%- include ('../partials/header.ejs') %>
+<section class="section">
+    <h1 class="title"><%= title %></h1>
+<div class="grid_section">
+    <% if (items && items.length > 0) { %>
+        <% items.forEach(item => { %>
+            <div class="card">
+                <h2 class="card_title"><%= item.name %></h2>
+                <p class="card_description"><%= item.description %></p>
+                <p class="card_capacity">Capacité: <%= item.capacity %></p>
+                <a href="/items/<%= item.id %>" class="card_link">View Item</a>
+            </div>
+        <% }) %>
+    <% } else { %>
+        <p>Aucune salle disponible</p>
+    <% } %>
+</div>
+
+</section>
+
+<%- include('../partials/footer.ejs') %>
