@@ -1,6 +1,7 @@
 import express from 'express';
 import homepageRouter from './app/routes/homepage.route.js';
 import roomRouter from './app/routes/room.route.js';
+import authRouter from './app/routes/auth.route.js'
 import cookieParser from 'cookie-parser';
 import 'dotenv/config';
 import './app/models/index.js';
@@ -21,6 +22,7 @@ app.use(express.static('public'));
 
 app.use('/', homepageRouter);
 app.use('/rooms', roomRouter);
+app.use('/', authRouter)
 
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
