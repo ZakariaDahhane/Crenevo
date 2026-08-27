@@ -1,0 +1,12 @@
+<%- include('../partials/header') %>
+
+<section class="section">
+    <h1 class="title"><%= title %></h1>
+    <div class="room_detail">
+        <h2 class="room_name"><%= item.name %></h2>
+        <p class="room_description"><%= item.description %></p>
+        <p class="room_capacity">Capacité: <%= item.capacity %></p>     
+    </div>
+</section>
+
+<%- include('../partials/footer') %>
