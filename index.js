@@ -1,14 +1,17 @@
 import express from 'express';
 import homepageRouter from './app/routes/homepage.route.js';
 import roomRouter from './app/routes/room.route.js';
+import cookieParser from 'cookie-parser';
 import 'dotenv/config';
 import './app/models/index.js';
 
 
 const app  = express();
+
 const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
+app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 
 app.set('view engine', 'ejs');
