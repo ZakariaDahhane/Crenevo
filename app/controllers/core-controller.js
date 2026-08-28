@@ -96,7 +96,7 @@ class CoreController {
                 return res.status(StatusCodes.BAD_REQUEST).render(`${this.viewFolderName}/edit`, {
                     title: `Modifier un ${this.model.name}`,
                     errorMessage: error.details[0].message,
-                    oldInput: req.body,
+                    oldInput: {...req.body, id:item.id}
                 });
             }
 
