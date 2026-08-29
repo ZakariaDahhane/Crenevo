@@ -3,6 +3,7 @@ import homepageRouter from './app/routes/homepage.route.js';
 import roomRouter from './app/routes/room.route.js';
 import authRouter from './app/routes/auth.route.js'
 import cookieParser from 'cookie-parser';
+import { decodeUserFromToken } from './app/middlewares/decodeUserFromToken.middleware.js';
 import 'dotenv/config';
 import './app/models/index.js';
 
@@ -20,6 +21,7 @@ app.set('views', './app/views');
 
 app.use(express.static('public'));
 
+app.use(decodeUserFromToken);
 app.use('/', homepageRouter);
 app.use('/rooms', roomRouter);
 app.use('/', authRouter)

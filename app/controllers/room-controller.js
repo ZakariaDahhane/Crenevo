@@ -1,4 +1,5 @@
 import Joi from 'joi';
+import { StatusCodes} from 'http-status-codes';
 import { Room } from '../models/index.js';
 import CoreController from './core-controller.js';
 
@@ -45,6 +46,58 @@ const roomSchema = Joi.object({
 class RoomController extends CoreController{
     constructor(){
         super(Room, roomSchema, 'rooms', '/rooms');
+    }
+
+    toggleActive = async (req,res) => {
+
+      try{
+
+      const { id } = req.params;
+
+      const room = await Room.findByPk(id);
+
+      if(!room){
+        return res.status(StatusCodes.NOT_FOUND).render('error', {message: "Cette salle n'existe pas" });
+      }
+
+      await room.update({ active: !room.active});
+       return res.redirect('/rooms');
+    } catch (error){
+      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).render('error',{message: 'Impossible de modifier le statut de la salle'});
+    }
+
+    }
+
+    getAll = async (req,res) => {
+
+      try{
+        const condition = req.userRole === 'manager' ? {} : {active: true};
+        const rooms = await Room.findAll({where: condition});
+        return res.status(StatusCodes.OK).render('rooms/list', {title: 'Liste des salles', items: rooms});
+      } catch (error){
+        return res.status(StatusCodes.INRERNAL_SERVER_ERROR).render('error',{message: 'Impossible de récupérer les salles'});
+      }
+    }
+
+    getById = async(req,res) => {
+
+      try{
+
+       const { id } = req.params;
+       const room = await Room.findByPk(id);
+
+       if(!room){
+        return res.status(StatusCodes.NOT_FOUND).render('error', {message: "Cette salle n'existe pas"});
+       }
+
+       if(!room.active && req.userRole !== 'manager'){
+        return res.status(StatusCodes.NOT_FOUND).render('error', {message: "Cette salle n'est pas disponible"});
+       }
+
+       return res.status(StatusCodes.OK).render('rooms/detail', {title: room.name, item: room});
+    } catch (error){
+      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).render('error',{message: 'Impossible de consulter cette salle'});
+    }
     }
 }
 

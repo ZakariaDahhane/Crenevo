@@ -1,13 +1,16 @@
 import express from 'express';
 import RoomController from '../controllers/room-controller.js';
+import { authenticateToken } from '../middlewares/auth-middleware.js';
+import { isManager } from '../middlewares/isManager.js';
 
 const router = express.Router();
 
 router.get('/', RoomController.getAll);
-router.get('/create', RoomController.create);
-router.post('/create', RoomController.create);
+router.get('/create', authenticateToken, isManager, RoomController.create);
+router.post('/create', authenticateToken, isManager, RoomController.create);
 router.get('/:id', RoomController.getById);
-router.get('/:id/edit', RoomController.update);
-router.post('/:id/edit', RoomController.update);
+router.get('/:id/edit', authenticateToken, isManager, RoomController.update);
+router.post('/:id/edit', authenticateToken, isManager, RoomController.update);
+router.post('/:id/toggle', authenticateToken, isManager, RoomController.toggleActive);
 
 export default router;

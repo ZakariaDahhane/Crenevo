@@ -1,0 +1,44 @@
+<%- include('../partials/header') %>
+
+
+<section class="form_container">
+    <h1>Modifier une salle</h1>
+
+<% if (errorMessage) { %>
+      <p>
+        <%= errorMessage %>
+      </p>
+      <% } %>
+
+      <form action="/rooms/<%= oldInput.id %>/edit" method="POST">
+        <label for="name">Nom</label>
+        <input type="text" id="name" name="name" value="<%= oldInput.name %>" required >
+
+        <label for="building">Bâtiment</label>
+        <input type="text" id="building" name="building" value="<%= oldInput.building %>" required >
+
+        <label for="floor">Étage</label>
+        <input type="text" id="floor" name="floor" value="<%= oldInput.floor %>"  >
+
+        <label for="capacity">Capacité</label>
+        <input type="number" id="capacity" name="capacity" value="<%= oldInput.capacity %>" required >
+
+        <label for="description">Description</label>
+        <textarea type="text" id="description" name="description"> <%= oldInput.description  || '' %> </textarea>
+
+        <label for="image">Image</label>
+        <input type="text" id="image" name="image" value="<%= oldInput.image  || '' %>" >
+
+        <label for="approval_required">Validation requise</label>
+        <select name="approval_required" id="approval_required">
+            <option value="false">Non</option>
+            <option value="true">Oui</option>
+        </select>
+
+        <div class="form_submit">
+            <button type="submit">Modifier</button>
+        </div>
+
+      </form>
+</section>
+<%- include('../partials/footer') %>
