@@ -7,7 +7,7 @@ export function isManager(req, res, next) {
         return next();
     }
 
-    return res.status(StatusCodes.FORBIDDEN).render('error', {
+    return res.status(StatusCodes.FORBIDDEN).render('error', { title: 'Accès refusé',
         message: 'Accès refusé. Cette page est réservée aux gestionnaires.',
     });
 }
