@@ -11,5 +11,6 @@ router.post('/create', authenticateToken, isManager, RoomController.create);
 router.get('/:id', RoomController.getById);
 router.get('/:id/edit', authenticateToken, isManager, RoomController.update);
 router.post('/:id/edit', authenticateToken, isManager, RoomController.update);
+router.post('/:id/toggle', authenticateToken, isManager, RoomController.toggleActive);
 
 export default router;
