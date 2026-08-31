@@ -1,0 +1,45 @@
+<%- include('../partials/header') %>
+
+<section>
+    <h1>Créer une réservation</h1>
+    <% if(errorMessage) { %>
+        <p> <%= errorMessage %> </p>
+    <% } %>
+
+    <% if (rooms.length === 0) { %>
+        <p> Aucune salle n'est disponible pour le moment</p>
+    <% } else { %>
+    <form action="/reservations/create" method="POST">
+        <label for="room_id">Salle</label>
+        <select name="room_id" id="room_id" required>
+            <option value="">Choisissez une salle</option>
+            <% rooms.forEach((room) => { %>
+                <option value="<%=room.id %>" <%= String(oldInput.room_id) === String(room.id) ? 'selected' : ''  %> >
+                    <%=room.name %> - capacité : <%=room.capacity %>
+                </option>
+                <% }) %>
+         </select>
+         <label for="subject">Sujet</label>
+         <input type="text" name="subject" id="subject" minLength="10" maxLength="100" value="<%=oldInput.subject ?? ''%>" required>
+
+         <label for="description">Description</label>
+         <textarea id="description" name="description" maxLength="2000"><%= oldInput.description ?? '' %></textarea>
+
+         <label for="start_at">Date et heure de début</label>
+         <input type="datetime-local" name="start_at" id="start_at" value="<%= oldInput.start_at ?? '' %>" required>
+
+         <label for="end_at">Date et heure de fin</label>
+         <input type="datetime-local" id="end_at" name="end_at" value="<%= oldInput.end_at ?? ''%>" required>
+
+         <label for="participant_count">Nombre de participants</label>
+         <input type="number" id="participant_count" name="participant_count" min="1" value="<%= oldInput.participant_count ?? ''%>" required>
+
+         <div class="form_submit">
+            <button type="submit">Réserver</button>
+         </div>
+    </form>
+    <% } %>
+</section>
+
+
+<%- include('../partials/footer') %>
