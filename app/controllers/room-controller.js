@@ -5,16 +5,19 @@ import CoreController from './core-controller.js';
 
 const roomSchema = Joi.object({
     name: Joi.string()
+      .trim()
       .min(3)
       .max(50)
       .required(),
 
     building: Joi.string()
+      .trim()
       .min(1)
       .max(50)
       .required(),
 
     floor: Joi.string()
+      .trim()
       .min(1)
       .max(10)
       .allow(null, ''),
@@ -25,6 +28,7 @@ const roomSchema = Joi.object({
       .required(),
 
     description: Joi.string()
+      .trim()
       .allow(null, ''),
 
     image: Joi.string()
