@@ -1,0 +1,53 @@
+<%- include('../partials/header') %>
+
+<section>
+    <h1>Gérer les réservations</h1>
+
+    <% if (reservations.length === 0) { %>
+        <p>Aucune réservation.</p>
+    <% } else { %>
+        <% reservations.forEach((reservation) => { %>
+            <article>
+                <h2><%= reservation.subject %></h2>
+
+                <p>Utilisateur: <%= reservation.user.first_name %> <%= reservation.user.last_name %></p>
+
+                <p>Email: <%= reservation.user.email %></p>
+
+                <p>Salle : <%= reservation.room.name %></p>
+
+                <p>Début :<%= reservation.start_at.toLocaleString('fr-FR') %></p>
+
+                <p>Fin :<%= reservation.end_at.toLocaleString('fr-FR') %></p>
+
+                <p>Participants :<%= reservation.participant_count %></p>
+
+                <p> Status: <%=reservation.status %></p>
+
+                <a href="/reservations/<%= reservation.id %>">Voir le détail</a>
+
+                <% if(reservation.status === 'pending') { %>
+                    <form action="/manager/reservations/<%= reservation.id %>/confirm" method="POST">
+
+                        <button type="submit">Confirmer</button>
+                    </form>
+
+                    <form action="/manager/reservations/<%= reservation.id %>/reject" method="POST">
+
+                        <label for="rejection_reason<%=reservation.id%>"> Motif de refus </label>
+                        <textarea name="rejection_reason" id="rejection_reason<%=reservation.id%>" minlength="3" maxlength="1000"></textarea>
+                        <button type="submit">
+                            Refuser
+                        </button>
+                    </form>
+
+                <% } %>
+            </article>
+        <% }) %>
+    <% } %>
+</section>
+
+
+
+
+<%- include('../partials/footer') %>

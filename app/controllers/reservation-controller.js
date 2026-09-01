@@ -1,6 +1,6 @@
 import Joi from "joi";
 import { Op } from 'sequelize';
-import { Reservation, Room, Unavailability } from "../models/index.js";
+import { Reservation, Room, Unavailability, User } from "../models/index.js";
 import { StatusCodes } from "http-status-codes";
 import CoreController from "./core-controller.js";
 
@@ -37,6 +37,13 @@ const reservationSchema = Joi.object({
       .positive()
       .required(),
 });
+ const rejectionSchema = Joi.object({
+    rejection_reason: Joi.string()
+      .trim()
+      .min(3)
+      .max(1000)
+      .required(),
+ });
 
 class ReservationController {
 
@@ -120,6 +127,122 @@ class ReservationController {
      }catch (error){
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).render('error', {message: "Impossible de récupérer vos réservations"});
      }
+    }
+
+    getReservationById = async (req, res) => {
+        try {
+            const { id } = req.params ;
+            const reservation = await Reservation.findByPk( id, 
+                { include : [{ model: Room, as: 'room'}]
+            });
+
+            if (!reservation){
+                return res.status(StatusCodes.NOT_FOUND).render('error', {message: "Cette réservation n'existe pas"});
+            }
+
+            const isOwner = reservation.user_id === req.userId;
+            const isManager = req.userRole === 'manager';
+
+            if(!isOwner && !isManager){
+                return res.status(StatusCodes.FORBIDDEN).render('error', {message: 'vous ne pouvez pas consulter cette réservation'});
+            }
+
+            return res.status(StatusCodes.OK).render('reservations/detail', {reservation});
+        } catch (error) {
+            return res.status(StatusCodes.INTERNAL_SERVER_ERROR).render('error',{message: 'Impossible de récuperer cette réservation'});
+        }
+    }
+
+    cancelReservation = async (req,res) =>{
+        try {
+            const { id } = req.params;
+            const reservation = await Reservation.findByPk(id);
+
+            if(!reservation){
+                return res.status(StatusCodes.NOT_FOUND).render('error', {message: "Cette réservation n'existe pas"});   
+            }
+            if(reservation.user_id !== req.userId){
+                return res.status(StatusCodes.FORBIDDEN).render('error', {message : "Vous ne pouvez pas annuler cette réservation"});
+            }
+
+            const cancellableStatuses = ['pending', 'confirmed'];
+
+            if(!cancellableStatuses.includes(reservation.status)){
+                return res.status(StatusCodes.CONFLICT).render('error', {message: "Vous ne pouvez pas annuler cette réservation"});
+            }
+
+            await reservation.update({status:'canceled', canceled_at: new Date()});
+            return res.redirect(`/reservations/${reservation.id}`);
+        } catch (error) {
+            return res.status(StatusCodes.INTERNAL_SERVER_ERROR).render('error',{message: "Impossible d'annuler cette réseravtion" });
+        }
+    }
+
+    getAllManager = async (req,res) =>{
+        try {
+            const reservations = await Reservation.findAll({
+                include: [{model: Room, as: 'room'}, {model: User, as: 'user', attributes: ['id','first_name', 'last_name', 'email']}],
+                order: [['start_at', 'ASC']]
+            })
+            return res.status(StatusCodes.OK).render('reservations/manage',{reservations});
+        } catch (error) {
+            return res.status(StatusCodes.INTERNAL_SERVER_ERROR).render('error',{message: "Impossible de récupérer les réservations" });
+        }
+    }
+
+    confirmReservation = async (req, res) =>{
+        try {
+            const { id } = req.params;
+            const reservation = await Reservation.findByPk(id);
+
+            if(!reservation){
+                return res.status(StatusCodes.NOT_FOUND).render('error', {message: "Cette réservation n'existe pas"});
+            }
+
+            if(reservation.status !== 'pending'){
+                return res.status(StatusCodes.CONFLICT).render('error', {message:"Seule une réservation en attente peut etre confirmée"});
+            }
+
+            await reservation.update({
+                status: 'confirmed',
+                manager_id: req.userId,
+                processed_at: new Date(),
+                rejection_reason: null,
+            });
+            
+            return res.redirect('/manager/reservations');
+        } catch (error) {
+            return res.status(StatusCodes.INTERNAL_SERVER_ERROR).render('error',{message: "Impossible de confirmer cette réservation" });
+        }
+    }
+
+    rejectReservation = async (req, res) =>{
+        try {
+            const {error, value} = rejectionSchema.validate(req.body);
+            
+            if(error){
+                return res.status(StatusCodes.BAD_REQUEST).render('error', {message: error.details[0].message})
+            }
+            const { id } = req.params;
+            const reservation = await Reservation.findByPk(id);
+
+            if(!reservation){
+                return res.status(StatusCodes.NOT_FOUND).render('error', {message: "Cette réservation n'existe pas"});
+            }
+            if(reservation.status !== 'pending'){
+                return res.status(StatusCodes.CONFLICT).render('error', {message:"Seule une réservation en attente peut etre refusée"});
+            }
+            await reservation.update({
+                status: 'rejected',
+                manager_id: req.userId,
+                processed_at: new Date(),
+                rejection_reason: value.rejection_reason,
+            });
+            
+            return res.redirect('/manager/reservations');
+        } catch (error) {
+            return res.status(StatusCodes.INTERNAL_SERVER_ERROR).render('error',{message: "Impossible de refuser cette réservation" });
+        }
     }
 }
 

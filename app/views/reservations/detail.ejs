@@ -1,0 +1,35 @@
+<%- include('../partials/header') %>
+
+<section>
+
+    <h1><%=reservation.subject %> </h1> 
+
+    <p>Salle: <%=reservation.room.name %> </p>
+
+    <p>Description: <%=reservation.description %> </p>
+
+    <p>Début: <%=reservation.start_at.toLocaleString('fr-FR') %> </p>
+
+    <p>Fin: <%=reservation.end_at.toLocaleString('fr-FR') %> </p>
+
+    <p>Participants: <%=reservation.participant_count %> </p>
+
+    <p>Status: <%=reservation.status %> </p>
+
+    <% if (reservation.rejection_reason) { %>
+        <p> Motif du refus : <%= reservation.rejection_reason  %> </p>
+    <% } %>
+
+    <% if (reservation.user_id === userId && (reservation.status === 'pending' || 'confirmed')) { %>
+        <form action="/reservations/<%= reservation.id %>/cancel" method="POST">
+            <button type="submit">
+                Annuler la réservation
+            </button>
+        </form>
+    <% } %>
+
+    <a href="/reservations">Retour à mes réservations</a>
+
+</section>
+
+<%- include('../partials/footer') %>
