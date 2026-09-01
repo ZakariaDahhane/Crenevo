@@ -3,6 +3,7 @@ import homepageRouter from './app/routes/homepage.route.js';
 import roomRouter from './app/routes/room.route.js';
 import authRouter from './app/routes/auth.route.js';
 import reservationRouter from './app/routes/reservation.route.js';
+import managerReservationRouter from './app/routes/manager-reservation.route.js'
 import cookieParser from 'cookie-parser';
 import { decodeUserFromToken } from './app/middlewares/decodeUserFromToken.middleware.js';
 import 'dotenv/config';
@@ -27,6 +28,7 @@ app.use('/', homepageRouter);
 app.use('/rooms', roomRouter);
 app.use('/', authRouter);
 app.use('/reservations', reservationRouter);
+app.use('/manager/reservations', managerReservationRouter);
 
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);

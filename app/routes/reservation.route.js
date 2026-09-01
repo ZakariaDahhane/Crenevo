@@ -7,5 +7,8 @@ const router = express.Router();
 router.get('/', authenticateToken, ReservationController.getUserReservations);
 router.get('/create', authenticateToken, ReservationController.showCreate);
 router.post('/create', authenticateToken, ReservationController.createReservation);
+router.get('/:id', authenticateToken, ReservationController.getReservationById);
+router.post('/:id/cancel', authenticateToken, ReservationController.cancelReservation);
+
 
 export default router;

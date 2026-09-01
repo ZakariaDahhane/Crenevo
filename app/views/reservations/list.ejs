@@ -1,6 +1,5 @@
 <%- include('../partials/header') %>
 
-<section>
     <section>
     <h1>Mes réservations</h1>
 
@@ -35,6 +34,7 @@
                         Annulée
                     <% } %>
                 </p>
+                <a href="/reservations/<%= reservation.id %>">Voir le détail</a>
             </article>
         <% }) %>
     <% } %>
