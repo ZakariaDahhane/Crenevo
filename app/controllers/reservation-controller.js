@@ -1,5 +1,6 @@
 import Joi from "joi";
-import { Reservation, Room } from "../models/index.js";
+import { Op } from 'sequelize';
+import { Reservation, Room, Unavailability } from "../models/index.js";
 import { StatusCodes } from "http-status-codes";
 import CoreController from "./core-controller.js";
 
@@ -16,6 +17,7 @@ const reservationSchema = Joi.object({
       .allow(null, ''),
 
     start_at: Joi.date()
+
       .iso()
       .greater('now')
       .required(),
@@ -74,19 +76,50 @@ class ReservationController {
                 return res.status(StatusCodes.BAD_REQUEST).render('reservations/create', {rooms, errorMessage:`Cette salle accepte au maximum ${room.capacity} personnes`, oldInput: req.body});
             }
 
+            const conflictingReservation = await Reservation.findOne(
+                {where: {room_id : value.room_id,
+                     status:{[Op.in]:['pending', 'confirmed']},
+                     start_at:{[Op.lt]:value.end_at},
+                     end_at:{[Op.gt]:value.start_at}}
+                }
+            );
+
+            if(conflictingReservation){
+                const rooms = await Room.findAll({where: {active: true}, order:[['name', 'ASC']]});
+                return res.status(StatusCodes.BAD_REQUEST).render('reservations/create', {rooms, errorMessage:"Cette salle est dèjà réservée pendant cet horaire", oldInput: req.body});
+            }
+
+            const conflictingUnavailability = await Unavailability.findOne(
+                {where:{room_id : value.room_id,
+                     start_at:{[Op.lt]:value.end_at},
+                     end_at:{[Op.gt]:value.start_at}}
+            })
+
+            if(conflictingUnavailability){
+                const rooms = await Room.findAll({where: {active: true}, order:[['name', 'ASC']]});
+                return res.status(StatusCodes.BAD_REQUEST).render('reservations/create', {rooms, errorMessage:"Cette salle est indisponible pendant cet horaire", oldInput: req.body});
+            }
+
             const status = room.approval_required ? 'pending' : 'confirmed';
 
             const reservation = await Reservation.create({
                 ...value, user_id: req.userId, status
             });
-            return res.redirect(`/rooms/${reservation.room_id}`);
+            return res.redirect('/reservations');
         } catch (error){
             return res.status(StatusCodes.INTERNAL_SERVER_ERROR).render('error', {message: "Impossible de créer la réservation"});
-        }
-            
+        }   
+    }
 
-
-        
+    getUserReservations = async (req, res) =>{
+     try {
+        const reservations = await Reservation.findAll(
+        {where:{user_id:req.userId}, include: [{model: Room, as: 'room'}], order:[['start_at', 'ASC']],
+        });
+        return res.status(StatusCodes.OK).render('reservations/list', {reservations});
+     }catch (error){
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).render('error', {message: "Impossible de récupérer vos réservations"});
+     }
     }
 }
 

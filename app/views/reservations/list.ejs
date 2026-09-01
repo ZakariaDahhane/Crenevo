@@ -1,0 +1,44 @@
+<%- include('../partials/header') %>
+
+<section>
+    <section>
+    <h1>Mes réservations</h1>
+
+    <a href="/reservations/create">
+        Créer une réservation
+    </a>
+
+    <% if (reservations.length === 0) { %>
+        <p>Vous n’avez aucune réservation.</p>
+    <% } else { %>
+        <% reservations.forEach((reservation) => { %>
+            <article>
+                <h2><%= reservation.subject %></h2>
+
+                <p>Salle : <%= reservation.room.name %></p>
+
+                <p>Début :<%= reservation.start_at.toLocaleString('fr-FR') %></p>
+
+                <p>Fin :<%= reservation.end_at.toLocaleString('fr-FR') %></p>
+
+                <p>Participants :<%= reservation.participant_count %></p>
+
+                <p>
+                    Statut :
+                    <% if (reservation.status === 'pending') { %>
+                        En attente
+                    <% } else if (reservation.status === 'confirmed') { %>
+                        Confirmée
+                    <% } else if (reservation.status === 'rejected') { %>
+                        Refusée
+                    <% } else if (reservation.status === 'canceled') { %>
+                        Annulée
+                    <% } %>
+                </p>
+            </article>
+        <% }) %>
+    <% } %>
+</section>
+
+
+<%- include('../partials/footer') %>
