@@ -10,5 +10,11 @@
         <nav>
             <a href="/">Crénévo</a>
         </nav>
+        <% if(userId) { %>
+            <a href="/reservations">Mes réservations</a>
+            <% } %>
+        <% if(userRole === 'manager') { %>
+            <a href="/manager/reservations">Gérer les réservations </a>
+            <% } %>
     </header>
     <main>

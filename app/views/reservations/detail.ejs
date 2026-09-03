@@ -14,7 +14,17 @@
 
     <p>Participants: <%=reservation.participant_count %> </p>
 
-    <p>Status: <%=reservation.status %> </p>
+    <p>Status: 
+        <% if (reservation.status === 'pending') { %>
+            En attente
+        <% } else if (reservation.status === 'confirmed') { %>
+            Confirmée
+        <% } else if (reservation.status === 'rejected') { %>
+            Refusée 
+        <% } else if (reservation.status === 'canceled') { %>
+            Annulée
+        <% } %>
+    </p>
 
     <% if (reservation.rejection_reason) { %>
         <p> Motif du refus : <%= reservation.rejection_reason  %> </p>
