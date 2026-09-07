@@ -1,0 +1,23 @@
+<%- include('../partials/header') %>
+
+<section>
+    <h2>Liste des indisponibilités</h2>
+
+    <a href="/manager/unavailabilities/create">Créer une indisponibilité</a>
+
+    <% if (unavailabilities.length === 0) { %>
+        <p>Aucune indisponibilité trouvée.</p>
+    <% } else { %>
+        <% unavailabilities.forEach(unavailability => { %>
+            <div>
+                <p>Salle: <%= unavailability.room.name %></p>
+                <p>Date de début: <%= unavailability.start_date.toLocaleString() %></p>
+                <p>Date de fin: <%= unavailability.end_date.toLocaleString() %></p>
+                <p>Raison: <%= unavailability.reason %></p>
+            </div>
+        <% }); %>
+    <% } %> 
+</section>
+
+
+<%- include('../partials/footer') %>
