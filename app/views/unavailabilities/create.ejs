@@ -1,0 +1,38 @@
+<%- include('../partials/header') %>
+
+<section>
+    <h2>Créer une indisponibilité</h2>
+
+    <%if (errorMessage) { %>
+        <p <%= errorMessage %> </p>
+    <% } %>
+
+    <% if (rooms.length === 0) { %>
+        <p>Aucune salle disponible pour créer une indisponibilité.</p>
+    <% } else { %>
+
+    <form action="/manager/unavailabilities/create" method="POST">
+
+        <div>
+            <label for="room_id">Salle:</label>
+            <select id="room_id" name="room_id" required>
+                <% rooms.forEach(room => { %>
+                    <option value="<%= room.id %>"><%= room.name %></option>
+                <% }); %>
+            </select>
+        <div>
+            <label for="start_date">Date de début:</label>
+            <input type="datetime-local" id="start_date" name="start_date" required>
+        </div>
+        <div>
+            <label for="end_date">Date de fin:</label>
+            <input type="datetime-local" id="end_date" name="end_date" required>
+        </div>
+        <button type="submit">Créer</button>
+    </form> 
+    <% } %>
+</section>
+
+
+
+<%- include('../partials/footer') %>
